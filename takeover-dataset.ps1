@@ -70,28 +70,9 @@ if ($groupId -eq "me") {
     $sourceGroupsPath = "myorg/groups/$groupId"
 }
 
-# Make the request to bind to a gateway
-$uri = "https://api.powerbi.com/v1.0/$sourceGroupsPath/datasets/$datasetId/BindToGateway"
+# Make the request to bind to take over the dataset
+$uri = "https://api.powerbi.com/v1.0/$sourceGroupsPath/datasets/$datasetId/takeover"
 
-# Try to bind to a new gateway
-try {
-    Invoke-RestMethod -Uri $uri -Headers $authHeader -Method POST -Verbose 
-} catch {
-
-    $result = $_.Exception.Response.GetResponseStream()
-    $reader = New-Object System.IO.StreamReader($result)
-    $reader.BaseStream.Position = 0
-    $reader.DiscardBufferedData()
-    $responseBody = $reader.ReadToEnd();
-
-    if($_.Exception.Response.StatusCode.value__ -eq "401")
-    {
-        Write-Host "Error: No access to app workspace."
-    }
-    else
-    {
-        Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
-        Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
-        Write-Host "StatusBody:" $responseBody
-    }
-}
+# Take Over Dataset
+Invoke-RestMethod -Uri $uri -Headers $authHeader -Method POST -Verbose 
+  
